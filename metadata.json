@@ -1,0 +1,6 @@
+{
+  "name": "WikiWorldWeb - Central de Produtos",
+  "description": "Central de produtos e serviços WikiWorldWeb. Catálogo de serviços gratuitos e Maribondo, checkout com PIX/cartão e histórico de aquisições.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

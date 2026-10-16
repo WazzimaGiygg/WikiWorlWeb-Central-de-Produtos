@@ -18,8 +18,8 @@ import { isExtensionManager } from '../firebase';
 
 interface NavbarProps {
   user: UserProfile | null;
-  activeTab: 'catalog' | 'my-products';
-  setActiveTab: (tab: 'catalog' | 'my-products') => void;
+  activeTab: 'catalog' | 'my-products' | 'extensions';
+  setActiveTab: (tab: 'catalog' | 'my-products' | 'extensions') => void;
   onOpenLogin: () => void;
   onLogout: () => void;
   onOpenNotifications: () => void;
@@ -110,6 +110,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {purchasedCount}
                 </span>
               )}
+            </button>
+            <button
+              onClick={() => setActiveTab('extensions')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === 'extensions'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <Puzzle className="w-4 h-4 text-indigo-300" />
+              Extensões
             </button>
           </nav>
 
@@ -247,6 +258,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {purchasedCount}
                 </span>
               )}
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('extensions');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold ${
+                activeTab === 'extensions'
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <Puzzle className="w-4 h-4 text-indigo-400" />
+              Extensões &amp; Nuvem
             </button>
             {isExtensionManager(user?.email) && (
               <button

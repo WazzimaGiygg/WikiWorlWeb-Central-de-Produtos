@@ -22,6 +22,7 @@ import { AdminModal } from './components/AdminModal';
 import { LoginModal } from './components/LoginModal';
 import { WikiConfiguratorModal } from './components/WikiConfiguratorModal';
 import { ExtensionsManagerModal } from './components/ExtensionsManagerModal';
+import { ExtensionsPageView } from './components/ExtensionsPageView';
 import { SecurityLockScreen } from './components/SecurityLockScreen';
 import {
   Search,
@@ -41,7 +42,7 @@ import {
 export default function App() {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  const [activeTab, setActiveTab] = useState<'catalog' | 'my-products'>('catalog');
+  const [activeTab, setActiveTab] = useState<'catalog' | 'my-products' | 'extensions'>('catalog');
 
   // Products & Purchases
   const [products, setProducts] = useState<Product[]>([]);
@@ -383,7 +384,18 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'my-products' ? (
+        {activeTab === 'extensions' ? (
+          <ExtensionsPageView
+            extensions={extensions}
+            products={products}
+            currentUser={currentUser}
+            syncedWithCloud={syncedWithCloud}
+            onExtensionUpdated={(newList) => setExtensions(newList)}
+            onRetrySync={handleRetrySync}
+            isRetryingSync={isRetryingSync}
+            onExploreCatalog={() => setActiveTab('catalog')}
+          />
+        ) : activeTab === 'my-products' ? (
           <MyProductsView
             purchases={userPurchases}
             allProducts={products}

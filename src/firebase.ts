@@ -329,6 +329,8 @@ export const DEFAULT_EXTENSIONS: ExtensionConfig[] = [
     ativo: true,
     versao: '1.2.0',
     obrigatoria: true,
+    categoria: 'catalogo',
+    autor: 'WikiWorldWeb Core',
     sincronizadoEm: new Date().toISOString(),
     servicosDisponiveis: {
       prod_free_01: true,
@@ -344,28 +346,56 @@ export const DEFAULT_EXTENSIONS: ExtensionConfig[] = [
   {
     id: 'ext_seguranca_governance',
     nome: 'Validador de Integridade & Burocratas',
-    descricao: 'Verifica assinaturas criptográficas dos administradores e previne adulterações de regras.',
+    descricao: 'Verifica assinaturas criptográficas dos administradores, autenticação Firebase e previne adulterações de regras.',
     ativo: true,
     versao: '2.0.4',
     obrigatoria: true,
+    categoria: 'seguranca',
+    autor: 'Equipe de Segurança',
     sincronizadoEm: new Date().toISOString()
   },
   {
     id: 'ext_wiki_alternative_repo',
     nome: 'Módulo de Injeção Wiki-alternative',
-    descricao: 'Integra o repositório WazzimaGiygg/Wiki-alternative com compilação e download dinâmico.',
+    descricao: 'Integra o repositório WazzimaGiygg/Wiki-alternative com compilação e download dinâmico do código modificado.',
     ativo: true,
     versao: '1.1.8',
     obrigatoria: true,
+    categoria: 'integracao',
+    autor: 'WazzimaGiygg',
     sincronizadoEm: new Date().toISOString()
   },
   {
     id: 'ext_checkout_pix_gateways',
     nome: 'Gateway de Pagamentos PIX & Cartões',
-    descricao: 'Processador de checkout e conciliação em nuvem para serviços e assinaturas.',
+    descricao: 'Processador de checkout e conciliação em nuvem para serviços e assinaturas WikiWorldWeb.',
     ativo: true,
     versao: '1.4.2',
     obrigatoria: true,
+    categoria: 'catalogo',
+    autor: 'Finanças WikiWorldWeb',
+    sincronizadoEm: new Date().toISOString()
+  },
+  {
+    id: 'ext_auditoria_logs',
+    nome: 'Monitor de Auditoria & Logs de Governança',
+    descricao: 'Rastreia eventos administrativos, alterações em permissões e acessos à infraestrutura em tempo real.',
+    ativo: true,
+    versao: '1.0.5',
+    obrigatoria: true,
+    categoria: 'seguranca',
+    autor: 'Governança Wiki',
+    sincronizadoEm: new Date().toISOString()
+  },
+  {
+    id: 'ext_cache_pwa_offline',
+    nome: 'Sincronizador PWA & Cache Offline',
+    descricao: 'Gerencia persistência em IndexedDB e sincronização em segundo plano com Firestore quando online.',
+    ativo: true,
+    versao: '1.3.1',
+    obrigatoria: false,
+    categoria: 'sistema',
+    autor: 'Sistemas Distribuídos',
     sincronizadoEm: new Date().toISOString()
   }
 ];

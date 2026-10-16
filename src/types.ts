@@ -60,6 +60,10 @@ export interface ExtensionConfig {
   versao: string;
   obrigatoria: boolean;
   sincronizadoEm?: string;
+  categoria?: 'catalogo' | 'seguranca' | 'integracao' | 'sistema';
+  autor?: string;
+  icon?: string;
+  modificadoPor?: string;
   // Para a primeira extensão: controlador de quais serviços estão disponíveis
   servicosDisponiveis?: Record<string, boolean>;
   modoManutencaoGeral?: boolean;

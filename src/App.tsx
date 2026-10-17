@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {
   auth,
+  ensureAuthSession,
   syncUserProfile,
   fetchProducts,
+  subscribeToProducts,
   fetchUserPurchases,
   fetchNotifications,
   fetchCloudExtensions,
@@ -88,13 +90,23 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadProductsList();
-    loadExtensions();
+    // Garantir sessão de segurança ativa com Firebase
+    ensureAuthSession().then(() => {
+      loadProductsList();
+      loadExtensions();
+    });
+
+    // Inscrição em tempo real para catálogo de serviços presente no banco de dados Firestore
+    const unsubProducts = subscribeToProducts((newProducts) => {
+      setProducts(newProducts);
+      setLoadingProducts(false);
+    });
 
     // Inscrição em tempo real para atualizações de extensões da nuvem
     const unsubExtensions = subscribeToCloudExtensions((newExts, isSynced) => {
       setExtensions(newExts);
       setSyncedWithCloud(isSynced);
+      setLoadingExtensions(false);
     });
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -108,7 +120,7 @@ export default function App() {
             return;
           }
           setCurrentUser(profile);
-          await loadUserData(profile.uid);
+          await loadUserData(profile.uid, profile.email);
         } catch (err) {
           console.error('Error handling auth state change:', err);
         }
@@ -125,6 +137,7 @@ export default function App() {
 
     return () => {
       unsubscribe();
+      unsubProducts();
       unsubExtensions();
     };
   }, []);
@@ -157,10 +170,10 @@ export default function App() {
     setLoadingProducts(false);
   };
 
-  const loadUserData = async (uid: string) => {
+  const loadUserData = async (uid: string, email?: string) => {
     try {
       const [purchases, notifs] = await Promise.all([
-        fetchUserPurchases(uid),
+        fetchUserPurchases(uid, email || currentUser?.email),
         fetchNotifications(uid)
       ]);
       setUserPurchases(purchases);
@@ -667,7 +680,7 @@ export default function App() {
         onClose={() => setLoginModalOpen(false)}
         onLoginSuccess={(user) => {
           setCurrentUser(user);
-          loadUserData(user.uid);
+          loadUserData(user.uid, user.email);
           showToast(`Bem-vindo(a), ${user.name}!`, 'success');
         }}
       />

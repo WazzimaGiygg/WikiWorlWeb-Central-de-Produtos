@@ -93,7 +93,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-2xl bg-[var(--bg-card)] text-[var(--text-main)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="px-6 py-5 bg-gradient-to-r from-amber-600 via-amber-700 to-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -114,13 +114,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         </div>
 
         {/* Tab Selector */}
-        <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-3 gap-2">
+        <div className="flex border-b border-[var(--border-subtle)] bg-[var(--bg-card-subtle)] px-6 pt-3 gap-2">
           <button
             onClick={() => setTab('create')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 ${
               tab === 'create'
-                ? 'border-amber-600 text-amber-700'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-amber-600 text-amber-600 dark:text-amber-400'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             <PlusCircle className="w-4 h-4" />
@@ -130,8 +130,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             onClick={() => setTab('orders')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 ${
               tab === 'orders'
-                ? 'border-amber-600 text-amber-700'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-amber-600 text-amber-600 dark:text-amber-400'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             <Receipt className="w-4 h-4" />
@@ -143,14 +143,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         {tab === 'create' && (
           <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
             {successMsg && (
-              <div className="p-3 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="p-3 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs rounded-xl border border-emerald-500/30 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span>{successMsg}</span>
               </div>
             )}
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
+              <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                 Nome do Produto / Serviço
               </label>
               <input
@@ -159,12 +159,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Ex: Módulo de Tradução Automática"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
+              <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                 Descrição Completa
               </label>
               <textarea
@@ -173,13 +173,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
                 placeholder="Explique o que este produto oferece..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                   Preço em Reais (R$)
                 </label>
                 <input
@@ -188,18 +188,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   value={preco}
                   onChange={(e) => setPreco(e.target.value)}
                   placeholder="0 para Gratuito ou 39.90"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                   Categoria
                 </label>
                 <select
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="Acesso">Acesso</option>
                   <option value="Comunidade">Comunidade</option>

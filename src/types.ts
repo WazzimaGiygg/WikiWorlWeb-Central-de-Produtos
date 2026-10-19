@@ -11,6 +11,7 @@ export interface Product {
   destaque?: boolean;
   popular?: boolean;
   tempoAcesso?: string; // e.g. "Vitalício", "1 Ano", "Mensal"
+  salesCount?: number;
 }
 
 export interface Purchase {

@@ -366,8 +366,8 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === cat.id
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  ? 'bg-[var(--text-main)] text-[var(--bg-card)] shadow-sm'
+                  : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]'
               }`}
             >
               {cat.label}
@@ -377,35 +377,35 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
 
         {/* Search Input */}
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[var(--text-subtle)] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Buscar extensões..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
 
       {/* EXTENSÃO EM DESTAQUE: 1ª EXTENSÃO (CONTROLADOR DE DISPONIBILIDADE DE SERVIÇOS) */}
       {primaryExtension && (selectedCategory === 'todas' || selectedCategory === 'catalogo') && (
-        <section className="bg-gradient-to-br from-blue-50/90 via-indigo-50/50 to-white rounded-3xl border-2 border-blue-200/90 p-6 space-y-6 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-blue-100">
+        <section className="bg-[var(--bg-card)] rounded-3xl border-2 border-blue-500/30 p-6 space-y-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--border-subtle)]">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-md shrink-0">
                 1ª
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900">
+                  <h3 className="font-extrabold text-base sm:text-lg text-[var(--text-main)]">
                     {primaryExtension.nome}
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-600 dark:text-blue-300 border border-blue-500/30">
                     Extensão Mestra • v{primaryExtension.versao}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                <p className="text-xs text-[var(--text-muted)] leading-relaxed max-w-2xl">
                   {primaryExtension.descricao}
                 </p>
               </div>
@@ -420,7 +420,7 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
                 className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
                   primaryExtension.ativo
                     ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                    : 'bg-slate-300 text-slate-700 hover:bg-slate-400'
+                    : 'bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-400'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {primaryExtension.ativo ? (
@@ -439,14 +439,14 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
           </div>
 
           {/* Sub-painel: Controle individual de serviços */}
-          <div className="bg-white rounded-2xl border border-blue-200/80 p-5 space-y-4">
+          <div className="bg-[var(--bg-card-subtle)] rounded-2xl border border-[var(--border-subtle)] p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h4 className="font-bold text-xs sm:text-sm text-slate-900 flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4 text-blue-600" />
+                <h4 className="font-bold text-xs sm:text-sm text-[var(--text-main)] flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   Disponibilidade dos Serviços no Catálogo WikiWorldWeb
                 </h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-[var(--text-subtle)] mt-0.5">
                   Ligue ou desligue qualquer produto para os usuários finais. As alterações têm efeito imediato.
                 </p>
               </div>
@@ -481,31 +481,31 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
                     key={prod.id}
                     className={`p-3.5 rounded-2xl border transition-all flex flex-col justify-between gap-2.5 ${
                       isEnabled
-                        ? 'bg-slate-50/80 border-slate-200 text-slate-900 shadow-sm'
-                        : 'bg-rose-50/50 border-rose-200 text-slate-500 opacity-75'
+                        ? 'bg-[var(--bg-card)] border-[var(--border-subtle)] text-[var(--text-main)] shadow-sm'
+                        : 'bg-rose-500/10 border-rose-500/30 text-[var(--text-muted)] opacity-75'
                     }`}
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-muted)]">
                           {prod.categoria}
                         </span>
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                             isEnabled
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-rose-100 text-rose-800'
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                              : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
                           }`}
                         >
                           {isEnabled ? '● Ativo' : '○ Desativado'}
                         </span>
                       </div>
-                      <h5 className="font-bold text-xs truncate text-slate-900">{prod.nome}</h5>
-                      <p className="text-[11px] text-slate-500 line-clamp-1">{prod.descricao}</p>
+                      <h5 className="font-bold text-xs truncate text-[var(--text-main)]">{prod.nome}</h5>
+                      <p className="text-[11px] text-[var(--text-muted)] line-clamp-1">{prod.descricao}</p>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-                      <span className="font-extrabold text-xs text-slate-800">
+                    <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between">
+                      <span className="font-extrabold text-xs text-[var(--text-main)]">
                         {prod.preco === 0 ? 'Gratuito' : `R$ ${prod.preco.toFixed(2)}`}
                       </span>
 
@@ -533,11 +533,11 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
       {/* DEMAIS EXTENSÕES GRID */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-indigo-600" />
+          <h3 className="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
+            <Layers className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
             Módulos de Integridade, Governança e Segurança ({filteredExtensions.length})
           </h3>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-[var(--text-subtle)]">
             Sincronização em tempo real via Firestore: <code>wiki_extensoes</code>
           </span>
         </div>
@@ -550,31 +550,31 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
                 key={ext.id}
                 className={`p-5 rounded-2xl border transition-all flex flex-col justify-between gap-4 ${
                   ext.ativo
-                    ? 'bg-white border-slate-200/90 shadow-sm hover:shadow-md'
-                    : 'bg-slate-50/70 border-slate-200 opacity-70'
+                    ? 'bg-[var(--bg-card)] border-[var(--border-subtle)] shadow-sm hover:shadow-md'
+                    : 'bg-[var(--bg-card-subtle)] border-[var(--border-subtle)] opacity-70'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">
                       {ext.categoria || 'Geral'}
                     </span>
                     <div className="flex items-center gap-1.5">
                       {ext.obrigatoria && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
                           Obrigatória
                         </span>
                       )}
-                      <span className="text-[10px] font-mono text-slate-400">v{ext.versao}</span>
+                      <span className="text-[10px] font-mono text-[var(--text-subtle)]">v{ext.versao}</span>
                     </div>
                   </div>
 
-                  <h4 className="font-bold text-sm text-slate-900">{ext.nome}</h4>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">{ext.descricao}</p>
+                  <h4 className="font-bold text-sm text-[var(--text-main)]">{ext.nome}</h4>
+                  <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{ext.descricao}</p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <div className="text-[10px] text-slate-400">
+                <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                  <div className="text-[10px] text-[var(--text-subtle)]">
                     <span className="block font-medium">Autor: {ext.autor || 'WikiWorldWeb'}</span>
                     <span>Sync: {ext.sincronizadoEm ? new Date(ext.sincronizadoEm).toLocaleTimeString() : 'Nuvem'}</span>
                   </div>
@@ -586,7 +586,7 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
                     className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all ${
                       ext.ativo
                         ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
-                        : 'bg-slate-300 text-slate-700 hover:bg-slate-400'
+                        : 'bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-400'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {ext.ativo ? (
@@ -608,15 +608,15 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
       {/* MODAL PARA CADASTRAR NOVA EXTENSÃO (RESTRITO AOS 2 BUROCRATAS) */}
       {newExtModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                <PlusCircle className="w-5 h-5 text-indigo-600" />
+          <div className="relative w-full max-w-lg bg-[var(--bg-card)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] p-6 space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+              <h3 className="font-bold text-base text-[var(--text-main)] flex items-center gap-2">
+                <PlusCircle className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
                 Cadastrar Nova Extensão no Firebase
               </h3>
               <button
                 onClick={() => setNewExtModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="p-1 rounded-lg text-[var(--text-subtle)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-subtle)]"
               >
                 ✕
               </button>
@@ -624,36 +624,36 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
 
             <form onSubmit={handleCreateCustomExtension} className="space-y-3.5 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Nome da Extensão</label>
+                <label className="font-bold text-[var(--text-main)] block mb-1">Nome da Extensão</label>
                 <input
                   type="text"
                   required
                   value={newExtName}
                   onChange={(e) => setNewExtName(e.target.value)}
                   placeholder="Ex: Validador de Webhooks Externos"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Descrição</label>
+                <label className="font-bold text-[var(--text-main)] block mb-1">Descrição</label>
                 <textarea
                   required
                   rows={2}
                   value={newExtDesc}
                   onChange={(e) => setNewExtDesc(e.target.value)}
                   placeholder="O que esta extensão faz e quais regras ela aplica..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Categoria</label>
+                  <label className="font-bold text-[var(--text-main)] block mb-1">Categoria</label>
                   <select
                     value={newExtCategory}
                     onChange={(e) => setNewExtCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs"
                   >
                     <option value="integracao">Integração Wiki</option>
                     <option value="seguranca">Segurança &amp; Governança</option>
@@ -663,22 +663,22 @@ export const ExtensionsPageView: React.FC<ExtensionsPageViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Versão Semântica</label>
+                  <label className="font-bold text-[var(--text-main)] block mb-1">Versão Semântica</label>
                   <input
                     type="text"
                     value={newExtVersion}
                     onChange={(e) => setNewExtVersion(e.target.value)}
                     placeholder="1.0.0"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-mono"
                   />
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[var(--border-subtle)] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setNewExtModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold"
+                  className="px-4 py-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-subtle)] font-semibold"
                 >
                   Cancelar
                 </button>

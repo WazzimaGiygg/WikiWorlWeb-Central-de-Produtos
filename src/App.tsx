@@ -40,8 +40,26 @@ import {
   Globe2,
   Users
 } from 'lucide-react';
+import { useTheme } from './theme';
+import { ThemeSelector } from './components/ThemeSelector';
+import { UpdatesFeed } from './components/UpdatesFeed';
+import { SYSTEM_UPDATES } from './data/defaultNotifications';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getProductSalesCount, recordProductSale } from './utils/salesData';
+
+const productGridVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.03
+    }
+  }
+};
 
 export default function App() {
+  const { theme, isDark } = useTheme();
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState<'catalog' | 'my-products' | 'extensions'>('catalog');
@@ -50,7 +68,17 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [userPurchases, setUserPurchases] = useState<Purchase[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [systemNotifications, setSystemNotifications] = useState<AppNotification[]>(SYSTEM_UPDATES);
   const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // Combina notificações do usuário e comunicados oficiais do sistema
+  const allNotifications = React.useMemo(() => {
+    const existingIds = new Set(notifications.map((n) => n.id));
+    return [
+      ...notifications,
+      ...systemNotifications.filter((s) => !existingIds.has(s.id))
+    ];
+  }, [notifications, systemNotifications]);
 
   // Filters & Search
   const [filterType, setFilterType] = useState<'all' | 'gratuito' | 'pago' | 'meus'>('all');
@@ -248,6 +276,9 @@ export default function App() {
     setLastPurchase(purchase);
     setReceiptModalOpen(true);
 
+    // Registra a aquisição para atualizar dinamicamente a contagem de vendas
+    recordProductSale(purchase.productId);
+
     showToast(
       purchase.isFree
         ? '🎉 Produto adquirido com sucesso!'
@@ -276,6 +307,7 @@ export default function App() {
 
   const handleMarkAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, lida: true })));
+    setSystemNotifications((prev) => prev.map((n) => ({ ...n, lida: true })));
     showToast('Notificações marcadas como lidas.', 'info');
   };
 
@@ -315,9 +347,14 @@ export default function App() {
       if (sortBy === 'price-asc') return a.preco - b.preco;
       if (sortBy === 'price-desc') return b.preco - a.preco;
       if (sortBy === 'name') return a.nome.localeCompare(b.nome);
-      // 'popular'
-      if (a.popular && !b.popular) return -1;
-      if (!a.popular && b.popular) return 1;
+      // 'popular' (Mais Vendidos baseados na contagem simulada de aquisições)
+      if (sortBy === 'popular') {
+        const salesDiff = getProductSalesCount(b) - getProductSalesCount(a);
+        if (salesDiff !== 0) return salesDiff;
+        if (a.popular && !b.popular) return -1;
+        if (!a.popular && b.popular) return 1;
+        return 0;
+      }
       return 0;
     });
 
@@ -335,7 +372,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[var(--bg-page)] flex flex-col text-[var(--text-main)] transition-colors duration-200 selection:bg-blue-600 selection:text-white">
       {/* Google AI Studio Environment Notice */}
       {inAiStudio && (
         <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 text-sky-200 text-xs px-4 py-2 border-b border-indigo-900/60 shadow-sm">
@@ -391,7 +428,7 @@ export default function App() {
         onOpenNotifications={() => setNotificationsModalOpen(true)}
         onOpenAdmin={() => setAdminModalOpen(true)}
         onOpenExtensions={() => setExtensionsModalOpen(true)}
-        notifications={notifications}
+        notifications={allNotifications}
         purchasedCount={userPurchases.length}
       />
 
@@ -460,6 +497,15 @@ export default function App() {
               </div>
             </section>
 
+            {/* Feed de Atualizações (Carrossel Horizontal de Notificações e Avisos) */}
+            <UpdatesFeed
+              notifications={allNotifications}
+              onOpenNotifications={() => setNotificationsModalOpen(true)}
+              onNotificationClick={(_notif) => {
+                setNotificationsModalOpen(true);
+              }}
+            />
+
             {/* Filter & Search Bar */}
             <div className="space-y-4">
               {/* Main Tabs (Matches user requirements: Todos, Gratuitos, Pagos, Meus) */}
@@ -470,7 +516,7 @@ export default function App() {
                     className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                       filterType === 'all'
                         ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                        : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                        : 'bg-[var(--bg-card)] hover:bg-[var(--bg-card-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-subtle)]'
                     }`}
                   >
                     Todos os Produtos ({products.length})
@@ -480,7 +526,7 @@ export default function App() {
                     className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                       filterType === 'gratuito'
                         ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20'
-                        : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                        : 'bg-[var(--bg-card)] hover:bg-[var(--bg-card-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-subtle)]'
                     }`}
                   >
                     Gratuitos
@@ -490,7 +536,7 @@ export default function App() {
                     className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                       filterType === 'pago'
                         ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                        : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                        : 'bg-[var(--bg-card)] hover:bg-[var(--bg-card-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-subtle)]'
                     }`}
                   >
                     Pagos / Maribondo
@@ -506,8 +552,8 @@ export default function App() {
                     }}
                     className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                       filterType === 'meus'
-                        ? 'bg-slate-900 text-white shadow-md'
-                        : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'
+                        ? 'bg-[var(--text-main)] text-[var(--bg-card)] shadow-md'
+                        : 'bg-[var(--bg-card)] hover:bg-[var(--bg-card-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-subtle)]'
                     }`}
                   >
                     Meus Produtos ({userPurchases.length})
@@ -517,22 +563,22 @@ export default function App() {
                 {/* Search & Sort */}
                 <div className="flex items-center gap-2.5">
                   <div className="relative flex-1 sm:w-64">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Search className="w-4 h-4 text-[var(--text-subtle)] absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       placeholder="Pesquisar produto..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
 
                   <select
                     value={sortBy}
                     onChange={(e: any) => setSortBy(e.target.value)}
-                    className="py-2 px-3 text-xs rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 font-medium shrink-0"
+                    className="py-2 px-3 text-xs rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-blue-500 text-[var(--text-main)] font-medium shrink-0"
                   >
-                    <option value="popular">Destaques &amp; Populares</option>
+                    <option value="popular">🔥 Mais Vendidos &amp; Populares</option>
                     <option value="price-asc">Menor Preço</option>
                     <option value="price-desc">Maior Preço</option>
                     <option value="name">Ordem Alfabética</option>
@@ -542,15 +588,15 @@ export default function App() {
 
               {/* Category Pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-                <span className="text-slate-400 font-semibold pr-1.5 shrink-0">Categorias:</span>
+                <span className="text-[var(--text-subtle)] font-semibold pr-1.5 shrink-0">Categorias:</span>
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-3 py-1 rounded-full font-medium transition-colors shrink-0 ${
                       selectedCategory === cat
-                        ? 'bg-slate-900 text-white font-semibold'
-                        : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                        ? 'bg-[var(--text-main)] text-[var(--bg-card)] font-semibold shadow-sm'
+                        : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)]'
                     }`}
                   >
                     {cat}
@@ -563,15 +609,20 @@ export default function App() {
             {loadingProducts ? (
               <div className="text-center py-20">
                 <div className="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-xs text-slate-500 font-medium">Carregando catálogo de produtos...</p>
+                <p className="text-xs text-[var(--text-subtle)] font-medium">Carregando catálogo de produtos...</p>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.25 }}
+                className="bg-[var(--bg-card)] rounded-3xl p-12 text-center border border-[var(--border-subtle)] shadow-sm space-y-3"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-[var(--bg-card-subtle)] text-[var(--text-subtle)] flex items-center justify-center mx-auto">
                   <ShoppingBag className="w-7 h-7" />
                 </div>
-                <h3 className="font-bold text-slate-800 text-base">Nenhum produto encontrado</h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                <h3 className="font-bold text-[var(--text-main)] text-base">Nenhum produto encontrado</h3>
+                <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto">
                   Não encontramos produtos com os filtros selecionados. Tente limpar a busca ou
                   selecionar outra categoria.
                 </p>
@@ -581,51 +632,68 @@ export default function App() {
                     setSelectedCategory('Todas');
                     setSearchTerm('');
                   }}
-                  className="px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl text-xs font-semibold transition-colors"
+                  className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 rounded-xl text-xs font-semibold transition-colors"
                 >
                   Limpar Todos os Filtros
                 </button>
-              </div>
+              </motion.div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    isOwned={isProductOwned(product.id)}
-                    onSelect={handleSelectProduct}
-                    onViewLicense={handleViewLicense}
-                    onConfigureWiki={handleOpenWikiConfig}
-                    isDisabledByExtension={isProductDisabled(product.id)}
-                  />
-                ))}
-              </div>
+              <motion.div
+                key={`grid-${filterType}-${selectedCategory}-${sortBy}`}
+                variants={productGridVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                <AnimatePresence mode="popLayout">
+                  {filteredProducts.map((product, index) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      allProducts={products}
+                      index={index}
+                      isOwned={isProductOwned(product.id)}
+                      onSelect={handleSelectProduct}
+                      onViewLicense={handleViewLicense}
+                      onConfigureWiki={handleOpenWikiConfig}
+                      isDisabledByExtension={isProductDisabled(product.id)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
             )}
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="mt-auto bg-[var(--bg-card)] text-[var(--text-muted)] border-t border-[var(--border-subtle)] text-xs py-8 transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
-              🌐
+            <div className="w-9 h-9 rounded-xl p-0.5 bg-slate-900 border border-slate-700/60 shadow-md flex items-center justify-center overflow-hidden">
+              <img
+                src="/logo.png"
+                alt="WikiWorldWeb Logo"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/logo.svg';
+                }}
+              />
             </div>
             <div>
-              <p className="font-bold text-slate-200 text-sm">WikiWorldWeb</p>
-              <p className="text-[11px] text-slate-400">
+              <p className="font-bold text-[var(--text-main)] text-sm">WikiWorldWeb</p>
+              <p className="text-[11px] text-[var(--text-subtle)]">
                 Central de Produtos e Serviços • Versão 2.4 Oficial
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-6 text-[11px]">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] text-[var(--text-muted)]">
             <a
               href="https://wzzm-ce3fc.firebaseapp.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors flex items-center gap-1"
+              className="hover:text-[var(--text-main)] transition-colors flex items-center gap-1 font-medium"
             >
               <span>Acessar Wiki</span>
               <ExternalLink className="w-3 h-3" />
@@ -634,7 +702,13 @@ export default function App() {
             <span>Termos de Uso</span>
           </div>
 
-          <p className="text-[11px] text-slate-500">
+          {/* Persistent Theme Selector in Footer */}
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-[var(--text-subtle)] font-medium">Tema Visual:</span>
+            <ThemeSelector variant="segmented" />
+          </div>
+
+          <p className="text-[11px] text-[var(--text-subtle)]">
             &copy; {new Date().getFullYear()} WikiWorldWeb. Todos os direitos reservados.
           </p>
         </div>
@@ -661,7 +735,7 @@ export default function App() {
 
       <NotificationsModal
         isOpen={notificationsModalOpen}
-        notifications={notifications}
+        notifications={allNotifications}
         onClose={() => setNotificationsModalOpen(false)}
         onMarkAllRead={handleMarkAllRead}
       />

@@ -16,9 +16,43 @@ import {
   Tag,
   Code2,
   Download,
-  Lock
+  Lock,
+  Github,
+  ExternalLink,
+  Flame,
+  TrendingUp
 } from 'lucide-react';
+import { motion, type Variants } from 'framer-motion';
 import { Product } from '../types';
+import { getProductSalesBadge } from '../utils/salesData';
+
+export const productCardVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+    scale: 0.98
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 280,
+      damping: 24,
+      mass: 0.8
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.96,
+    y: 12,
+    transition: {
+      duration: 0.18,
+      ease: 'easeOut'
+    }
+  }
+};
 
 interface ProductCardProps {
   product: Product;
@@ -27,6 +61,8 @@ interface ProductCardProps {
   onViewLicense?: (product: Product) => void;
   onConfigureWiki?: (product: Product) => void;
   isDisabledByExtension?: boolean;
+  index?: number;
+  allProducts?: Product[];
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -35,9 +71,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onSelect,
   onViewLicense,
   onConfigureWiki,
-  isDisabledByExtension
+  isDisabledByExtension,
+  index,
+  allProducts = []
 }) => {
   const isFree = product.preco === 0 || product.tipo === 'gratuito';
+
+  // Lógica dinâmica para selo "Mais Vendidos" e contagem de aquisições
+  const salesBadge = React.useMemo(() => {
+    return getProductSalesBadge(product, allProducts.length > 0 ? allProducts : [product]);
+  }, [product, allProducts]);
 
   // Dynamic Lucide icon mapping
   const renderIcon = (iconName: string) => {
@@ -76,13 +119,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div
-      className={`group relative bg-white rounded-2xl border transition-all duration-300 flex flex-col justify-between overflow-hidden ${
+    <motion.div
+      layout
+      variants={productCardVariants}
+      whileHover={{
+        y: -6,
+        transition: { duration: 0.22, ease: 'easeOut' }
+      }}
+      className={`group relative bg-[var(--bg-card)] rounded-2xl border transition-colors flex flex-col justify-between overflow-hidden shadow-[var(--shadow-card)] ${
         isOwned
-          ? 'border-emerald-200 shadow-sm ring-1 ring-emerald-500/20'
+          ? 'border-emerald-500/30 ring-1 ring-emerald-500/20'
           : product.popular
-          ? 'border-blue-300 shadow-xl shadow-blue-500/10 hover:shadow-2xl hover:border-blue-400 hover:-translate-y-1'
-          : 'border-slate-200/90 shadow-sm hover:shadow-xl hover:border-slate-300 hover:-translate-y-1'
+          ? 'border-blue-400/50 shadow-blue-500/10 hover:shadow-2xl hover:border-blue-400'
+          : 'border-[var(--border-subtle)] hover:shadow-xl hover:border-blue-500/40'
       }`}
     >
       {/* Top Banner & Badges */}
@@ -108,12 +157,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {product.categoria || 'Geral'}
             </span>
 
-            <div className="flex items-center gap-1.5">
-              {product.popular && !isOwned && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-400 text-amber-950 shadow-md">
-                  ★ Mais Popular
+            <div className="flex items-center gap-1.5 flex-wrap justify-end">
+              {/* Dynamic Mais Vendidos badge */}
+              {salesBadge.isTopSeller && !isOwned && !isDisabledByExtension && (
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white shadow-md shadow-orange-500/25 ring-1 ring-white/30 tracking-tight animate-in fade-in select-none"
+                  title={`${salesBadge.salesCount.toLocaleString('pt-BR')} aquisições confirmadas`}
+                >
+                  <Flame className="w-3.5 h-3.5 text-yellow-200 fill-yellow-200 animate-pulse" />
+                  <span>{salesBadge.badgeLabel}</span>
+                  <span className="text-[10px] font-bold bg-black/25 px-1.5 py-0.2 rounded-full border border-white/20">
+                    {salesBadge.formattedCount}
+                  </span>
                 </span>
               )}
+
               {isDisabledByExtension ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-600 text-white shadow-md">
                   <Lock className="w-3 h-3" /> Desabilitado
@@ -150,22 +208,40 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Content Body */}
         <div className="p-6">
-          <h3 className="font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors leading-snug">
+          <h3 className="font-bold text-lg text-[var(--text-main)] group-hover:text-blue-500 transition-colors leading-snug">
             {product.nome}
           </h3>
-          <p className="mt-2 text-sm text-slate-600 line-clamp-2 leading-relaxed">
+          <p className="mt-2 text-sm text-[var(--text-muted)] line-clamp-2 leading-relaxed">
             {product.descricao}
           </p>
 
+          {/* Dynamic Acquisition Counter / Social Proof */}
+          <div className="mt-3.5 flex items-center justify-between text-xs bg-[var(--bg-card-subtle)] px-3 py-2 rounded-xl border border-[var(--border-subtle)]">
+            <div className="flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+              <span className="text-[var(--text-muted)] text-[11px] sm:text-xs">
+                <strong className="text-[var(--text-main)] font-extrabold">{salesBadge.salesCount.toLocaleString('pt-BR')}</strong> aquisições
+              </span>
+            </div>
+            {salesBadge.isTopSeller ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
+                <Flame className="w-3 h-3 fill-orange-500 text-orange-500" />
+                Alta Demanda
+              </span>
+            ) : (
+              <span className="text-[10px] text-[var(--text-subtle)]">Disponível</span>
+            )}
+          </div>
+
           {/* Feature List */}
           {product.features && product.features.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-100 space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-subtle)]">
                 O que está incluso:
               </span>
               <ul className="space-y-1.5">
                 {product.features.slice(0, 3).map((feat, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-xs text-slate-600">
+                  <li key={idx} className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
                     <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </li>
@@ -177,29 +253,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Footer / CTA Area */}
-      <div className="p-6 pt-0 bg-white">
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between mb-4">
+      <div className="p-6 pt-0 bg-[var(--bg-card)]">
+        <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between mb-4">
           <div>
-            <span className="text-[11px] font-medium text-slate-400 block">
+            <span className="text-[11px] font-medium text-[var(--text-subtle)] block">
               {isFree ? 'Custo de Adesão' : 'Investimento'}
             </span>
             <div className="flex items-baseline gap-1">
               <span
                 className={`text-2xl font-extrabold tracking-tight ${
-                  isFree ? 'text-teal-600' : 'text-slate-900'
+                  isFree ? 'text-teal-500' : 'text-[var(--text-main)]'
                 }`}
               >
                 {formatPrice(product.preco)}
               </span>
               {!isFree && (
-                <span className="text-xs text-slate-400 font-normal">
+                <span className="text-xs text-[var(--text-subtle)] font-normal">
                   {product.categoria === 'Assinatura' ? '/mês' : 'único'}
                 </span>
               )}
             </div>
           </div>
           {isFree && (
-            <span className="text-xs font-semibold px-2 py-1 bg-teal-50 text-teal-700 rounded-lg">
+            <span className="text-xs font-semibold px-2 py-1 bg-teal-500/15 text-teal-600 dark:text-teal-400 rounded-lg">
               Sem mensalidade
             </span>
           )}
@@ -209,9 +285,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {isDisabledByExtension ? (
           <button
             disabled
-            className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed flex items-center justify-center gap-2 shadow-none"
+            className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-[var(--bg-card-subtle)] text-[var(--text-subtle)] border border-[var(--border-subtle)] cursor-not-allowed flex items-center justify-center gap-2 shadow-none"
           >
-            <Lock className="w-3.5 h-3.5 text-slate-400" />
+            <Lock className="w-3.5 h-3.5 text-[var(--text-subtle)]" />
             <span>Serviço Desabilitado por Extensão</span>
           </button>
         ) : product.id === 'prod_free_01' ? (
@@ -224,6 +300,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <span>Configurar &amp; Baixar Wiki</span>
               <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
             </button>
+
+            {/* Direct Project Download from Repository */}
+            <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+              <a
+                href="https://github.com/WazzimaGiygg/Wiki-alternative/archive/refs/heads/main.zip"
+                download="Wiki-alternative-main.zip"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Baixar arquivo ZIP completo do repositório GitHub"
+                className="py-2 px-2 rounded-xl font-bold text-[11px] bg-[var(--bg-card-subtle)] hover:bg-blue-600/10 hover:text-blue-500 text-[var(--text-main)] border border-[var(--border-subtle)] hover:border-blue-500/40 transition-all flex items-center justify-center gap-1.5 shadow-sm text-center"
+              >
+                <Download className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <span className="truncate">Baixar Projeto (.ZIP)</span>
+              </a>
+
+              <a
+                href="https://github.com/WazzimaGiygg/Wiki-alternative"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Acessar repositório WazzimaGiygg/Wiki-alternative no GitHub"
+                className="py-2 px-2 rounded-xl font-bold text-[11px] bg-[var(--bg-card-subtle)] hover:bg-slate-200 dark:hover:bg-slate-700 text-[var(--text-main)] border border-[var(--border-subtle)] transition-colors flex items-center justify-center gap-1 text-center"
+              >
+                <Github className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">GitHub Repo</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" />
+              </a>
+            </div>
+
             {isOwned && (
               <button
                 onClick={() => onViewLicense && onViewLicense(product)}
@@ -260,6 +364,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -16,7 +16,11 @@ import {
   Palette,
   ExternalLink,
   Layers,
-  Save
+  Save,
+  Terminal,
+  FolderDown,
+  FileDown,
+  Package
 } from 'lucide-react';
 import { UserProfile, Product, Purchase } from '../types';
 import { registerPurchase, firebaseConfig as defaultFirebaseConfig } from '../firebase';
@@ -73,7 +77,12 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
   // Download & Copy states
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedConfig, setCopiedConfig] = useState(false);
+  const [copiedCloneCmd, setCopiedCloneCmd] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const GITHUB_REPO_URL = 'https://github.com/WazzimaGiygg/Wiki-alternative';
+  const GITHUB_ZIP_URL = 'https://github.com/WazzimaGiygg/Wiki-alternative/archive/refs/heads/main.zip';
+  const GITHUB_CLONE_CMD = 'git clone https://github.com/WazzimaGiygg/Wiki-alternative.git';
 
   useEffect(() => {
     if (user?.uid && !bureaucratUid) {
@@ -404,6 +413,22 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
     setTimeout(() => setCopiedCode(false), 2500);
   };
 
+  const handleCopyCloneCmd = () => {
+    navigator.clipboard.writeText(GITHUB_CLONE_CMD);
+    setCopiedCloneCmd(true);
+    setTimeout(() => setCopiedCloneCmd(false), 2500);
+  };
+
+  const handleDownloadRepositoryZip = () => {
+    const link = document.createElement('a');
+    link.href = GITHUB_ZIP_URL;
+    link.download = 'Wiki-alternative-main.zip';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleSaveAndConfirm = async () => {
     setSaving(true);
     try {
@@ -436,7 +461,7 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-4xl bg-[var(--bg-card)] text-[var(--text-main)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
         {/* Top Header */}
         <div className="px-6 py-4 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -472,13 +497,13 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
         </div>
 
         {/* Step Navigation Tabs */}
-        <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-2 gap-2 overflow-x-auto shrink-0">
+        <div className="flex border-b border-[var(--border-subtle)] bg-[var(--bg-card-subtle)] px-6 pt-2 gap-2 overflow-x-auto shrink-0">
           <button
             onClick={() => setActiveStep('bureaucrat')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
               activeStep === 'bureaucrat'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             <ShieldCheck className="w-4 h-4" />
@@ -489,8 +514,8 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
             onClick={() => setActiveStep('firebase')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
               activeStep === 'firebase'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             <Flame className="w-4 h-4 text-amber-500" />
@@ -501,8 +526,8 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
             onClick={() => setActiveStep('wiki')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
               activeStep === 'wiki'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             <Settings className="w-4 h-4" />
@@ -942,47 +967,185 @@ export const WikiConfiguratorModal: React.FC<WikiConfiguratorModalProps> = ({
                 </div>
               </div>
 
-              {/* Code Snippet Box */}
-              <div className="rounded-2xl border border-slate-200 overflow-hidden shadow-inner">
-                <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
-                  <span>index.html modificado (Repositório Wiki-alternative)</span>
-                  <span>HTML + JS + Firebase Compat</span>
-                </div>
-                <pre className="p-4 bg-slate-950 text-slate-200 text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed select-all">
-                  {generateModifiedHtmlCode()}
-                </pre>
-              </div>
+              {/* Download Options Hub */}
+              <div className="space-y-4">
+                <h5 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                  <FolderDown className="w-4 h-4 text-blue-600" />
+                  Opções de Download do Projeto Wiki-alternative
+                </h5>
 
-              {/* Download & Save CTA */}
-              <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                  <h5 className="font-bold text-slate-900 text-sm">
-                    Baixe e execute no seu servidor ou navegador
-                  </h5>
-                  <p className="text-xs text-slate-600 mt-0.5">
-                    O arquivo gerado já contém o Burocrata definido, chaves do Firebase injetadas e
-                    está 100% pronto para uso.
-                  </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Option 1: Full Repository ZIP from GitHub */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950 text-white flex flex-col justify-between border border-slate-800 shadow-md relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                      <Github className="w-24 h-24" />
+                    </div>
+
+                    <div className="space-y-2 relative z-10">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-500/30 text-sky-300 border border-blue-400/30">
+                          Repositório Oficial
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">Branch: main</span>
+                      </div>
+
+                      <h4 className="text-base font-bold flex items-center gap-2 text-white">
+                        <Package className="w-4 h-4 text-sky-400" />
+                        Projeto Completo (.ZIP)
+                      </h4>
+
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        Código-fonte completo do repositório <strong>WazzimaGiygg/Wiki-alternative</strong>.
+                        Inclui Vite, TypeScript, servidor Express (<code>server.ts</code>), scripts e dependências.
+                      </p>
+                    </div>
+
+                    <div className="pt-4 space-y-2 relative z-10">
+                      <button
+                        type="button"
+                        onClick={handleDownloadRepositoryZip}
+                        className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-bold text-xs shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Baixar Projeto Completo (.ZIP)</span>
+                      </button>
+
+                      <a
+                        href={GITHUB_REPO_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-1.5 px-3 rounded-lg bg-white/10 hover:bg-white/15 text-slate-300 hover:text-white text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <Github className="w-3.5 h-3.5" />
+                        <span>Abrir Repositório no GitHub</span>
+                        <ExternalLink className="w-3 h-3 opacity-60" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Option 2: Modified index.html with Bureaucrat & Firebase */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/80 border border-blue-200/90 flex flex-col justify-between shadow-sm relative overflow-hidden group">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-100 text-blue-700 border border-blue-300">
+                          Personalizado para Você
+                        </span>
+                        <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">
+                          Burocrata Injetado
+                        </span>
+                      </div>
+
+                      <h4 className="text-base font-bold flex items-center gap-2 text-slate-900">
+                        <FileCode className="w-4 h-4 text-blue-600" />
+                        index.html Modificado
+                      </h4>
+
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        Arquivo único com sua autoridade máxima definida (<strong>{bureaucratEmail || bureaucratUid}</strong>)
+                        e chaves Firebase. Substitua o <code>index.html</code> no projeto ou hospede diretamente.
+                      </p>
+                    </div>
+
+                    <div className="pt-4 space-y-2">
+                      <button
+                        type="button"
+                        onClick={handleDownloadFile}
+                        className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Download className="w-4 h-4 text-sky-200" />
+                        <span>Baixar index.html Modificado</span>
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleCopyCode}
+                          className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedCode ? 'Copiado!' : 'Copiar Código'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleDownloadConfigOnly}
+                          className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Download className="w-3.5 h-3.5 text-slate-600" />
+                          <span>Baixar JSON</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
-                  <button
-                    type="button"
-                    onClick={handleDownloadFile}
-                    className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2"
-                  >
-                    <Download className="w-4 h-4 text-blue-600" />
-                    <span>Baixar Arquivo HTML</span>
-                  </button>
+                {/* Git Clone & Terminal Quick Start */}
+                <div className="p-4 rounded-2xl bg-slate-950 text-slate-200 border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5 text-sky-400">
+                      <Terminal className="w-4 h-4" />
+                      Clonar repositório via Terminal (Git)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyCloneCmd}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-mono flex items-center gap-1.5 transition-colors border border-slate-700"
+                    >
+                      {copiedCloneCmd ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                      <span>{copiedCloneCmd ? 'Comando Copiado!' : 'Copiar'}</span>
+                    </button>
+                  </div>
+
+                  <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 font-mono text-[11px] text-sky-300 overflow-x-auto select-all">
+                    {GITHUB_CLONE_CMD}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-slate-400 border-t border-slate-800/80">
+                    <div>
+                      <span className="font-bold text-slate-300 block">1. Clone ou Baixe o ZIP</span>
+                      <span>Extraia os arquivos do repositório</span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-slate-300 block">2. Injetar index.html</span>
+                      <span>Substitua pelo código personalizado</span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-slate-300 block">3. Iniciar Servidor</span>
+                      <span className="font-mono text-sky-400">npm install &amp;&amp; npm run dev</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Code Snippet Box */}
+                <div className="rounded-2xl border border-slate-200 overflow-hidden shadow-inner">
+                  <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
+                    <span>index.html modificado para Wiki-alternative</span>
+                    <span>HTML + JS + Firebase Compat</span>
+                  </div>
+                  <pre className="p-4 bg-slate-950 text-slate-200 text-[11px] font-mono overflow-x-auto max-h-48 leading-relaxed select-all">
+                    {generateModifiedHtmlCode()}
+                  </pre>
+                </div>
+
+                {/* Confirm & Save in Account */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div>
+                    <h6 className="font-bold text-slate-900 text-xs">
+                      Vincular à sua conta WikiWorldWeb
+                    </h6>
+                    <p className="text-[11px] text-slate-500">
+                      Gera sua licença gratuita vitalícia e salva o registro nas suas aquisições.
+                    </p>
+                  </div>
 
                   <button
                     type="button"
                     disabled={saving}
                     onClick={handleSaveAndConfirm}
-                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 shrink-0"
                   >
                     <Save className="w-4 h-4" />
-                    <span>{saving ? 'Salvando...' : 'Salvar & Confirmar'}</span>
+                    <span>{saving ? 'Salvando...' : 'Confirmar Aquisição & Baixar'}</span>
                   </button>
                 </div>
               </div>

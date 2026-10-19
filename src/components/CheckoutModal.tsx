@@ -12,7 +12,8 @@ import {
   ArrowRight,
   AlertCircle,
   Code2,
-  Github
+  Github,
+  Download
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Product, Purchase, UserProfile } from '../types';
@@ -93,7 +94,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-2xl bg-[var(--bg-card)] text-[var(--text-main)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="px-6 py-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -120,19 +121,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {/* Body */}
         <div className="p-6 max-h-[75vh] overflow-y-auto space-y-6">
           {/* Product Snapshot */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-100 text-blue-700">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-600 dark:text-blue-300 border border-blue-500/30">
                 {product.categoria}
               </span>
-              <h4 className="font-bold text-slate-900 text-base">{product.nome}</h4>
-              <p className="text-xs text-slate-500 line-clamp-1">{product.descricao}</p>
+              <h4 className="font-bold text-[var(--text-main)] text-base">{product.nome}</h4>
+              <p className="text-xs text-[var(--text-muted)] line-clamp-1">{product.descricao}</p>
             </div>
             <div className="text-right shrink-0">
-              <span className="text-xs text-slate-400 block font-medium">Total</span>
+              <span className="text-xs text-[var(--text-subtle)] block font-medium">Total</span>
               <span
                 className={`text-xl font-extrabold ${
-                  isFree ? 'text-teal-600' : 'text-slate-900'
+                  isFree ? 'text-teal-600 dark:text-teal-400' : 'text-[var(--text-main)]'
                 }`}
               >
                 {formatPrice(product.preco)}
@@ -361,30 +362,45 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               </div>
 
-              {product.id === 'prod_free_01' && onConfigureWiki && (
+              {product.id === 'prod_free_01' && (
                 <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                   <div className="flex items-start gap-2.5">
                     <Code2 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-blue-950">
-                        Configurar Repositório Wiki-alternative (WazzimaGiygg)
+                        Repositório Wiki-alternative (WazzimaGiygg)
                       </p>
                       <p className="text-blue-800 text-[11px] mt-0.5">
-                        Defina quem será o Burocrata, as credenciais Firebase e baixe o arquivo HTML pronto.
+                        Defina o Burocrata, credenciais Firebase ou baixe diretamente o código completo do projeto.
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onConfigureWiki(product);
-                    }}
-                    className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shrink-0 transition-colors shadow-sm flex items-center gap-1.5"
-                  >
-                    <Code2 className="w-3.5 h-3.5" />
-                    <span>Abrir Configurador</span>
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                    {onConfigureWiki && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          onConfigureWiki(product);
+                        }}
+                        className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        <Code2 className="w-3.5 h-3.5" />
+                        <span>Configurar</span>
+                      </button>
+                    )}
+
+                    <a
+                      href="https://github.com/WazzimaGiygg/Wiki-alternative/archive/refs/heads/main.zip"
+                      download="Wiki-alternative-main.zip"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-xs transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                    >
+                      <Download className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Baixar ZIP</span>
+                    </a>
+                  </div>
                 </div>
               )}
             </div>

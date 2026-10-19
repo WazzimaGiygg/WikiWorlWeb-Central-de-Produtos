@@ -53,7 +53,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-lg bg-[var(--bg-card)] text-[var(--text-main)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Top Graphic Header */}
         <div className="p-6 bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white text-center relative">
           <button
@@ -78,7 +78,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
         {/* Content */}
         <div className="p-6 space-y-5">
           {/* License Key Box */}
-          <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2 border border-slate-800 shadow-md">
+          <div className="p-4 rounded-2xl bg-slate-950 text-white space-y-2 border border-slate-800 shadow-md">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-sky-400" />
@@ -89,7 +89,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               </span>
             </div>
 
-            <div className="flex items-center justify-between gap-2 bg-slate-800/80 p-2.5 rounded-xl border border-slate-700">
+            <div className="flex items-center justify-between gap-2 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
               <span className="font-mono text-sm sm:text-base font-bold text-sky-300 tracking-wide select-all">
                 {purchase.activationKey || 'WWW-2026-PRO-9842'}
               </span>
@@ -108,14 +108,14 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           </div>
 
           {/* Receipt Details Breakdown */}
-          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5 text-xs text-slate-600">
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Produto</span>
-              <span className="font-bold text-slate-900">{purchase.productName}</span>
+          <div className="bg-[var(--bg-card-subtle)] rounded-2xl p-4 border border-[var(--border-subtle)] space-y-2.5 text-xs text-[var(--text-muted)]">
+            <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
+              <span className="text-[var(--text-subtle)]">Produto</span>
+              <span className="font-bold text-[var(--text-main)]">{purchase.productName}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Categoria</span>
-              <span className="font-semibold text-slate-800">{purchase.productCategory}</span>
+            <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
+              <span className="text-[var(--text-subtle)]">Categoria</span>
+              <span className="font-semibold text-[var(--text-main)]">{purchase.productCategory}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-slate-200/60">
               <span className="text-slate-500">Titular</span>

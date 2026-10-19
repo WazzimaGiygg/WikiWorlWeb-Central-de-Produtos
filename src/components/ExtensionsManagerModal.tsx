@@ -170,7 +170,7 @@ export const ExtensionsManagerModal: React.FC<ExtensionsManagerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-3xl bg-[var(--bg-card)] text-[var(--text-main)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
         {/* Header */}
         <div className="px-6 py-5 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -199,16 +199,16 @@ export const ExtensionsManagerModal: React.FC<ExtensionsManagerModalProps> = ({
         </div>
 
         {/* Sync & Auth Status Bar */}
-        <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs shrink-0">
+        <div className="px-6 py-3 bg-[var(--bg-card-subtle)] border-b border-[var(--border-subtle)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs shrink-0">
           <div className="flex items-center gap-2">
             {syncedWithCloud ? (
-              <span className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                <CloudCheck className="w-4 h-4 text-emerald-600" />
+              <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                <CloudCheck className="w-4 h-4 text-emerald-500" />
                 Extensões Sincronizadas com Nuvem Firestore
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-amber-700 font-semibold bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-                <CloudOff className="w-4 h-4 text-amber-600" />
+              <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
+                <CloudOff className="w-4 h-4 text-amber-500" />
                 Aguardando Sincronização em Nuvem
               </span>
             )}

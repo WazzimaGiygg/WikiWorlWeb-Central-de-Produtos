@@ -149,7 +149,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-[var(--bg-card)] text-[var(--text-main)] rounded-3xl shadow-2xl border border-[var(--border-subtle)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Top Header */}
         <div className="p-8 pb-6 text-center bg-gradient-to-b from-slate-900 to-slate-950 text-white relative">
           <button
@@ -334,9 +334,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <button
                 type="button"
                 onClick={() => setMode('email_login')}
-                className="w-full py-2.5 px-4 rounded-xl font-semibold text-xs text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 rounded-xl font-semibold text-xs text-[var(--text-main)] bg-[var(--bg-card-subtle)] hover:bg-[var(--border-subtle)] border border-[var(--border-subtle)] transition-colors flex items-center justify-center gap-2"
               >
-                <Mail className="w-4 h-4 text-slate-600" />
+                <Mail className="w-4 h-4 text-blue-500" />
                 <span>Entrar com E-mail e Senha</span>
               </button>
 
@@ -344,9 +344,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <button
                 type="button"
                 onClick={handleDemoLogin}
-                className="w-full py-2 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-800 bg-transparent hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2 px-4 rounded-xl text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] bg-transparent hover:bg-[var(--bg-card-subtle)] transition-colors flex items-center justify-center gap-1.5"
               >
-                <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>Continuar como Visitante</span>
               </button>
             </div>
@@ -355,53 +355,53 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <form onSubmit={handleEmailAuth} className="space-y-3.5">
               {mode === 'email_signup' && (
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                  <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                     Seu Nome
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <User className="w-4 h-4 text-[var(--text-subtle)] absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Nome completo"
-                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                   E-mail
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-4 h-4 text-[var(--text-subtle)] absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seuemail@exemplo.com"
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-[var(--text-main)] block mb-1">
                   Senha
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-[var(--text-subtle)] absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[var(--bg-card-subtle)] border border-[var(--border-subtle)] text-[var(--text-main)] placeholder-[var(--text-subtle)] text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -431,7 +431,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setMode('email_signup')}
-                    className="text-blue-600 hover:underline font-semibold"
+                    className="text-blue-500 hover:underline font-semibold"
                   >
                     Não tem conta? Cadastre-se
                   </button>
@@ -439,7 +439,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setMode('email_login')}
-                    className="text-blue-600 hover:underline font-semibold"
+                    className="text-blue-500 hover:underline font-semibold"
                   >
                     Já tem conta? Fazer Login
                   </button>
@@ -448,7 +448,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setMode('google')}
-                  className="text-slate-500 hover:text-slate-700"
+                  className="text-[var(--text-muted)] hover:text-[var(--text-main)]"
                 >
                   Voltar ao Google
                 </button>
